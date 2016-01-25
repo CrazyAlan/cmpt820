@@ -15,11 +15,23 @@ class DCT():
 			piArange = np.arange(i,2*i*8,2*i)*np.pi/16
 			#print np.cos(piArange)
 			tmpT[i, :] *= np.cos(piArange)
-
 		self.T = tmpT
+		return self.T
 
+	def dct(self, f):
+		self.F = ((self.T).dot(f)).dot(self.T.transpose())
+		return self.F
+
+	def idct(self, F):
+		self.f_hat = ((self.T.transpose()).dot(self.F)).dot(self.T)
+		return self.f_hat
 
 newDCT = DCT()
 
+tmpf = np.random.rand(8, 8)
 
-print newDCT.T
+Fnew = newDCT.dct(tmpf)
+fNew = newDCT.idct(Fnew)
+
+
+print fNew - tmpf
