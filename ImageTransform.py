@@ -1,6 +1,4 @@
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-from PIL import Image, ImageTk
+from PIL import Image
 
 import numpy as np
 
@@ -13,12 +11,12 @@ class ImageTransform:
 		self.yuv2rgbMat = np.array([[1, 0, 1.13983],[1, -0.39465, -0.58060],[1, 2.03211, 0]])
 
 	def readImage(self, path):
-		self.rgb = mpimg.imread(path)
+		self.img = Image.open(path)
+		self.rgb = np.array(self.img)
 		return self.rgb
 
 	def showImage(self):
-		imgplot = plt.imshow(self.img)
-		return imgplot
+		self.img.show()
 
 	def rgb2yuv(self):
 		self.yuv = (self.rgb).dot(np.transpose(self.rgb2yuvMat))
@@ -31,20 +29,14 @@ class ImageTransform:
 		self.Y = self.yuv[:,:,0]
 		self.Cr = self.yuv[0::2, 1::2, 1] #seems wrong on book
 		self.Cb = self.yuv[0::2, 1::2, 2]
-		
-	
+
+	def rgb2img(self, rgb):	
+		self.img = Image.fromarray(rgb)
+		return self.img
 
 newImage = ImageTransform()
 orgrgb = newImage.readImage("kodim23.png")
-
-
-newImage.rgb2yuv()
-newImage.yuv2rgb()
-newRgb = newImage.rgb
-newImage.chromaSub()
-print newImage.Y.shape
-print newImage.Cr.shape
-
+newImage.showImage()
 
 
 
