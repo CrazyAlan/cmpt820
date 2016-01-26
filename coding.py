@@ -3,9 +3,10 @@ import numpy as np
 import ImageTransform as imt
 import dct 
 
-def encode(imgPath, quantMat):
+
+def encode(imgRGB, quantMat):
 	orgImage = imt.ImageTransform()
-	orgRGB = orgImage.readImage(imgPath)
+	orgImage.initFromRGB(imgRGB)
 	#orgImage.showImage()
 
 	'''yuv transform'''
@@ -49,7 +50,7 @@ def encode(imgPath, quantMat):
 	F_vecCr_Quan = imgQuant.quanitzeVec(F_vecCr)
 	F_vecCb_Quan = imgQuant.quanitzeVec(F_vecCb)
 	F_info =  [F_vecY_Quan, F_vecCr_Quan, F_vecCb_Quan]
-	orgShape = np.shape(orgRGB)
+	orgShape = np.shape(imgRGB)
 	return F_info, orgShape
 
 def decode(F_info, quantMat, orgShape): #orgShape, orginal image shape

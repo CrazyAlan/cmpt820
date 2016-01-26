@@ -14,6 +14,10 @@ class ImageTransform:
 		self.rgb = np.zeros(shapeInfo, dtype=np.float64)
 		self.yuv = np.zeros(shapeInfo, dtype=np.float64)
 		#self.img = self.rgb2img(self.rgb)
+	def initFromRGB(self, rgbImg):
+		self.rgb = rgbImg
+		self.img = self.rgb2img(rgbImg)
+		
 
 	def readImage(self, path):
 		self.img = Image.open(path)
