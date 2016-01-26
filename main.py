@@ -42,24 +42,24 @@ F_vecCb = dctIm.dctVec(vecCb)
 
 
 '''Quantization on all F'''
-'''imgQuant = quant.Quantization()
-quantMat = np.full([8,8], 1)
+imgQuant = quant.Quantization()
+quantMat = np.full([8,8], 100)
 imgQuant.initQTMatrix(quantMat)
 
 F_vecY_Quan = imgQuant.quanitzeVec(F_vecY)
 F_vecCr_Quan = imgQuant.quanitzeVec(F_vecCr)
 F_vecCb_Quan = imgQuant.quanitzeVec(F_vecCb)
-'''
 
 '''Dequantization'''
-'''FRec_vecY_Quan = imgQuant.dquanitzeVec(F_vecY_Quan)
+FRec_vecY_Quan = imgQuant.dquanitzeVec(F_vecY_Quan)
 FRec_vecCr_Quan = imgQuant.dquanitzeVec(F_vecCr_Quan)
 FRec_vecCb_Quan = imgQuant.dquanitzeVec(F_vecCb_Quan)
-'''
 
-f_vecY = dctIm.idctVec(F_vecY)
-f_vecCr = dctIm.idctVec(F_vecCr)
-f_vecCb = dctIm.idctVec(F_vecCb)
+
+f_vecY = dctIm.idctVec(FRec_vecY_Quan)
+f_vecCr = dctIm.idctVec(FRec_vecCr_Quan)
+f_vecCb = dctIm.idctVec(FRec_vecCb_Quan)
+
 
 
 recoverImg = imt.ImageTransform()
