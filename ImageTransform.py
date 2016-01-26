@@ -10,9 +10,9 @@ class ImageTransform:
 		self.rgb2yuvMat = np.array([[0.299,0.587,0.114], [-0.14713, -0.28886, 0.436], [0.615, -0.51499, -0.10001]])
 		self.yuv2rgbMat = np.array([[1, 0, 1.13983],[1, -0.39465, -0.58060],[1, 2.03211, 0]])
 
-	def initEmptyImage(self, imgRGB):
-		self.rgb = np.zeros_like(imgRGB, dtype=np.float64)
-		self.yuv = np.empty_like(imgRGB, dtype=np.float64)
+	def initEmptyImage(self, shapeInfo):
+		self.rgb = np.zeros(shapeInfo, dtype=np.float64)
+		self.yuv = np.zeros(shapeInfo, dtype=np.float64)
 		#self.img = self.rgb2img(self.rgb)
 
 	def readImage(self, path):

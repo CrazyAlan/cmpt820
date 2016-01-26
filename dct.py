@@ -49,8 +49,8 @@ class DCT():
 
 	#devectorize the matrix
 	@staticmethod
-	def dvecMat(orgMat, inMat):
-		rows, cols = np.shape(orgMat)
+	def dvecMat(shapeInfo, inMat):
+		rows, cols = shapeInfo
 		outMat = np.empty([rows, cols])
 		for i in xrange(0, rows/8):
 			for j in xrange(0, cols/8):
