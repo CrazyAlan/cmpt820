@@ -86,5 +86,6 @@ def decode(F_info, quantMat, orgShape): #orgShape, orginal image shape
 
 	#print (imageRGB)
 	imgtoshow = recoverImg.rgb2img(recRGBImg)
-	imgtoshow.show()
+	#imgtoshow.show()
+	return recRGBImg, imgtoshow
 	

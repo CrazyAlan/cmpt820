@@ -48,6 +48,12 @@ class ImageTransform:
 		img = Image.fromarray(rgb)
 		return img
 
+	@staticmethod
+	def imresize(orgImgObj, shapeInfo, ratio):
+		outImg = orgImgObj.resize((np.array(shapeInfo[1])/ratio, np.array(shapeInfo[0])/ratio))
+		return outImg
+
+
 '''
 newImage = ImageTransform()
 orgrgb = newImage.readImage("kodim23.png")
