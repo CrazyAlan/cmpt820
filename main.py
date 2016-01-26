@@ -29,12 +29,21 @@ recRGB_quart, recImg2show_quart = coding.decode(F_info_quart, quantMat, orgShape
 #Encode half diff  Image
 hierVar = hr.Hier(quantMat)
 halfdiffF_info, halfdifforgShape, hafldiffrecRGB, halfdiffrecImg2show = hierVar.hierEncode(np.array(quartImg), np.array(halfImg))
+
+#Decode half 
+recRGB_halfdiff, recImg2show_halfdiff = coding.decode(halfdiffF_info, quantMat, halfdifforgShape)
+fRecoverHalf, fRecoverHalfImg = hierVar.hireDecode(np.array(quartImg), recRGB_halfdiff)
+#fRecoverHalfImg.show()
+#fRecover, fRecoverImg = hierVar.hireDecode(fRecoverHalf, diffF_info, difforgShape)
+
 #Encode whole diff Image
-diffF_info, difforgShape, diffrecRGB, diffrecImg2show = hierVar.hierEncode(np.array(halfImg), np.array(imgPIL))
+#imgPIL.show()
+diffF_info, difforgShape, diffrecRGB, diffrecImg2show = hierVar.hierEncode(np.array(fRecoverHalfImg), np.array(imgPIL))
+#Decode whole image
+recRGB_diff, recImg2show_diff = coding.decode(diffF_info, quantMat, difforgShape)
+fRecoverHalf, fRecoverHalfImg = hierVar.hireDecode(np.array(fRecoverHalfImg), recRGB_diff)
+fRecoverHalfImg.show()
 
-
-fRecoverHalf, fRecoverHalfImg = hierVar.hireDecode(F_info_quart, halfdiffF_info, halfdifforgShape)
-fRecover, fRecoverImg = hierVar.hireDecode(fRecoverHalf, diffF_info, difforgShape)
 
 #fRecoverHalfImg.show()
 

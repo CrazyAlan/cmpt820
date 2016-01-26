@@ -25,21 +25,20 @@ class Hier():
 
 		return F_info, orgShape, recRGB, recImg2show
 
-	def hireDecode(self, F_info_half, F_info_diff, diffShape):	
-		orgHalfShape = (np.array(diffShape[0])/2, np.array(diffShape[1])/2, 3)
-		print orgHalfShape
-		recRGBHalf, recImg2showHalf = coding.decode(F_info_half, self.quantMat, orgHalfShape)
+	def hireDecode(self, halfRGB, diffRGB):	
+		diffShape = np.shape(diffRGB)
+		#recRGBHalf, recImg2showHalf = coding.decode(F_info_half, self.quantMat, orgHalfShape)
 
 		#recImg2showHalf.show()
 		#diffShape = (np.shape(F_info_diff[0])[0], np.shape(F_info_diff[0])[1], 3)
-		print diffShape
-		recRGBDiff, recImg2showDiff = coding.decode(F_info_diff, self.quantMat, diffShape)
+		#print diffShape
+		#recRGBDiff, recImg2showDiff = coding.decode(F_info_diff, self.quantMat, diffShape)
 
 		#add up
-		E_f_half = imt.ImageTransform.imresize(self.IMT.rgb2img(recRGBHalf), diffShape, 1)
+		E_f_half = imt.ImageTransform.imresize(self.IMT.rgb2img(halfRGB), diffShape, 1)
 		E_f_half_RGB = np.array(E_f_half)
 
-		fRecover = recRGBDiff + E_f_half_RGB
+		fRecover = diffRGB + E_f_half_RGB
 		fRecoverImg = self.IMT.rgb2img(fRecover)
 
 		return fRecover, fRecoverImg
