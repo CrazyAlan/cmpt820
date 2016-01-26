@@ -69,10 +69,11 @@ recoverImg.Y = dct.DCT.dvecMat(orgImage.Y, f_vecY)
 recoverImg.Cr = dct.DCT.dvecMat(orgImage.Cr, f_vecCr)
 recoverImg.Cb = dct.DCT.dvecMat(orgImage.Cb, f_vecCb) 
 
-
-print np.sum(recoverImg.Y - orgImage.Y)
-
 recoverImg.chromaExpand()
+
+#print np.sum(recoverImg.Y - orgImage.Y)
+#print np.sum(recoverImg.yuv[:,:,0] - orgImage.yuv[:,:,0])
+
 
 recRGBImg = recoverImg.yuv2rgb()
 recRGBImg = recRGBImg.astype(np.uint8)

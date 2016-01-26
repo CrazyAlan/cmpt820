@@ -11,9 +11,9 @@ class ImageTransform:
 		self.yuv2rgbMat = np.array([[1, 0, 1.13983],[1, -0.39465, -0.58060],[1, 2.03211, 0]])
 
 	def initEmptyImage(self, imgRGB):
-		self.rgb = np.zeros_like(imgRGB)
-		self.yuv = np.zeros_like(imgRGB)
-		self.img = self.rgb2img(self.rgb)
+		self.rgb = np.zeros_like(imgRGB, dtype=np.float64)
+		self.yuv = np.empty_like(imgRGB, dtype=np.float64)
+		#self.img = self.rgb2img(self.rgb)
 
 	def readImage(self, path):
 		self.img = Image.open(path)
