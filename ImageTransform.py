@@ -36,8 +36,8 @@ class ImageTransform:
 
 	def chromaSub(self):
 		self.Y = self.yuv[:,:,0]
-		self.Cr = self.yuv[0::2, 1::2, 1] #seems wrong on book
-		self.Cb = self.yuv[0::2, 1::2, 2]
+		self.Cr = self.yuv[0::2, 0::2, 1] #seems wrong on book
+		self.Cb = self.yuv[0::2, 0::2, 2]
 
 	def chromaExpand(self):
 		self.yuv[:,:,0] = self.Y
