@@ -6,36 +6,85 @@ import main
 
 class layout():
 	"""docstring for layout"""
-	def __init__(self, master, randomeMat):
+	def __init__(self, master, randomeMat, result, path):
 		self.master = master
 		self.randomeMat = randomeMat
-		self.matIndex = 1
+		self.matIndex = 0
 		self.quantMat = self.randomeMat[self.matIndex, :, :]
 
 		self.imgFrame = Frame(bd=3, relief=SUNKEN)
 		self.imgFrame.grid(row=0)
 		
 		self.matFrame = Frame()
-		self.matFrame.grid(row=0, column=1)
+		self.matFrame.grid(row=0, column=1,sticky=N)
 
-		image = Image.open("kodim23.png")
-		image = image.resize((384, 256))
-		photo = ImageTk.PhotoImage(image)
+		self.result = result
+		self.path = path
+		#self.Frame = Frame()
+		#self.matFrame.grid(row=0, column=1)
 
-		Label(self.imgFrame, text="Original Image").grid(row=0, column=8)
-		self.photolabel = Label(self.imgFrame, image=photo)
-		self.photolabel.image = photo # keep a reference!
-		self.photolabel.grid(row = 1, column=8)
+		self.resultShow()
 
-		self.recphotolabel = Label(self.imgFrame, image=photo)
-		self.recphotolabel.image = photo # keep a reference!
-		self.recphotolabel.grid(row=9,column=8)
-
-		self.button2 = Button(self.matFrame, text="Change Quantization Matrix")
+		self.button2 = Button(self.imgFrame, text="Change Quantization Matrix")
 		self.button2.bind("<Button-1>", self.changePhoto) #binding funcs with widgets
-		self.button2.grid(row=10, column=8)
+		self.button2.grid(row=4, column=0)
 
 		self.changeMat(self.quantMat)
+
+	def resultShow(self):
+		image = self.result[0] #original image
+		image = image.resize(tuple(np.array(image.size)/2))
+		photo = ImageTk.PhotoImage(image)
+
+		Label(self.imgFrame, text="Original Image").grid(row=0, column=0)
+		self.photolabel = Label(self.imgFrame, image=photo)
+		self.photolabel.image = photo # keep a reference!
+		self.photolabel.grid(row = 1, column=0)
+
+		image = self.result[1] #recovered image
+		image = image.resize(tuple(np.array(image.size)/2))
+		photo = ImageTk.PhotoImage(image)
+
+		Label(self.imgFrame, text="hierachical result").grid(row=2, column=0)
+		self.recphotolabel = Label(self.imgFrame, image=photo)
+		self.recphotolabel.image = photo # keep a reference!
+		self.recphotolabel.grid(row=3,column=0)
+
+		image = self.result[2] #halfdiff image
+		image = image.resize(tuple(np.array(image.size)/2))
+		photo = ImageTk.PhotoImage(image)
+
+		Label(self.imgFrame, text="halfdiff result").grid(row=0, column=1)
+		self.recphotolabel = Label(self.imgFrame, image=photo)
+		self.recphotolabel.image = photo # keep a reference!
+		self.recphotolabel.grid(row=1,column=1)
+
+		image = self.result[3] #full diff image
+		image = image.resize(tuple(np.array(image.size)/2))
+		photo = ImageTk.PhotoImage(image)
+
+		Label(self.imgFrame, text="full diff result").grid(row=2, column=1)
+		self.recphotolabel = Label(self.imgFrame, image=photo)
+		self.recphotolabel.image = photo # keep a reference!
+		self.recphotolabel.grid(row=3,column=1)
+
+		image = self.result[4] #half recover image
+		image = image.resize(tuple(np.array(image.size)/2))
+		photo = ImageTk.PhotoImage(image)
+
+		Label(self.imgFrame, text="half recover result").grid(row=0, column=2)
+		self.recphotolabel = Label(self.imgFrame, image=photo)
+		self.recphotolabel.image = photo # keep a reference!
+		self.recphotolabel.grid(row=1,column=2)
+
+		image = self.result[5] #full recover image
+		image = image.resize(tuple(np.array(image.size)/2))
+		photo = ImageTk.PhotoImage(image)
+
+		Label(self.imgFrame, text="quarter result").grid(row=2, column=2)
+		self.recphotolabel = Label(self.imgFrame, image=photo)
+		self.recphotolabel.image = photo # keep a reference!
+		self.recphotolabel.grid(row=3,column=2)
 
 	def printMessage(self, event):
 		print("it works")
@@ -46,11 +95,9 @@ class layout():
 		self.matIndex = (self.matIndex+1)%6
 		self.changeMat(quantMat)
 
-		recImage = main.main(quantMat)
-		newImage = recImage.resize((384, 256))
-		newImage = ImageTk.PhotoImage(newImage)
-		self.recphotolabel.image = newImage # keep a reference!
-		self.recphotolabel.config(image=newImage)
+		self.result = main.main(quantMat, self.path)
+		self.resultShow()
+		
 		print("Change Matrix")
 		print quantMat
 
@@ -58,7 +105,7 @@ class layout():
 		for r in range(8):
 		    for c in range(8):
 		        Label(self.matFrame, text='%i'%(quantMat[r,c]),
-		            borderwidth=1, padx=2 , pady=2).grid(row=r,column=c)
+		            borderwidth=1, padx=2 , pady=2).grid(row=r,column=c,sticky=N)
 
 root = Tk()
 
@@ -70,8 +117,12 @@ randomeMat[3,:,:] *= 32
 randomeMat[4,:,:] *= 2
 randomeMat[5,:,:] *= 128
 
+#[imgPIL fRecoverImg halfdiffrecImg2show diffrecImg2show fRecoverHalfImg recImg2show_quart] = main.main(quantMat)
+quantMat = randomeMat[0]
+path = "kodim23.png"
+result =  main.main(quantMat, path)
 
-lay = layout(root,randomeMat) 
+lay = layout(root,randomeMat, result, path) 
 
 root.mainloop()
 

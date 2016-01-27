@@ -6,12 +6,12 @@ import ImageTransform as imt
 import dct 
 import hierarchical as hr
 
-def main(quantMat):
+def main(quantMat, path):
 	#quantMat = np.full([8,8], 1)
 
 	#Read Image
 	orgImage = imt.ImageTransform()
-	orgRGB = orgImage.readImage("kodim23.png")
+	orgRGB = orgImage.readImage(path)
 
 	#Reduce resolution
 	imgPIL = orgImage.rgb2img(orgRGB)
@@ -44,7 +44,7 @@ def main(quantMat):
 	fRecover, fRecoverImg = hierVar.hireDecode(np.array(fRecoverHalfImg), recRGB_diff)
 	#fRecoverHalfImg.show()
 	#fRecoverImg.show()
-	return fRecoverImg
+	return [imgPIL, fRecoverImg, halfdiffrecImg2show ,diffrecImg2show, fRecoverHalfImg ,recImg2show_quart] 
 
 	#fRecoverHalfImg.show()
 
