@@ -1,48 +1,64 @@
 from Tkinter import *
 from PIL import Image, ImageTk
 import numpy as np
+import main
 
-class layoutFrame():
-	"""docstring for layoutFrame"""
-	def __init__(self, master):
-		
-		self.master = master
-		frame = Frame(master)
-		frame.pack()
-		'''load image'''
-		image = Image.open("apple.jpeg")
-		photo = ImageTk.PhotoImage(image)
+def printMessage(event):
+	print("it works")
 
 
-		self.printbutton1 = Button(frame, text="Print Message", command=self.printMessage)
-		self.printbutton1.pack(side=LEFT)
+def changePhoto( event):
+	recImage = main.main(quantMat)
+	newImage = recImage.resize((384, 256))
+	newImage = ImageTk.PhotoImage(newImage)
+	recphotolabel.image = newImage # keep a reference!
+	recphotolabel.config(image=newImage)
+	print("Change Matrix")
 
-		self.quitbutton = Button(frame, text="quit", command=frame.quit)
-		self.quitbutton.pack(side=LEFT)
-
-
-	def printMessage(self):
-		print("it works")
-		pass
+def changeMat(root, quantMat):
+	for r in range(8):
+	    for c in range(8):
+	        Label(root, text='%i'%(quantMat[r,c]),
+	            borderwidth=1, padx=2 , pady=2).grid(row=r,column=c)
 
 root = Tk()
-newFrame = layoutFrame(root)
+imgFrame = Frame(bd=3, relief=SUNKEN)
+imgFrame.grid(row=0, sticky=N)
 
 
-'''
-image = Image.open("apple.jpeg")
+matFrame = Frame()
+matFrame.grid(row=0, column=1)
+
+quantMat = np.full([8,8], 2)
+changeMat(matFrame, quantMat)
+
+
+image = Image.open("kodim23.png")
+image = image.resize((384, 256))
 photo = ImageTk.PhotoImage(image)
-w, h = 512, 512
-data = np.zeros((h, w, 3), dtype=np.uint8)
-data[256, 256] = [255, 0, 0]
-img = Image.fromarray(data, 'RGB')
-photo = ImageTk.PhotoImage(img)
 
-print type(image)
-print type(photo)
-print type(img)
-'''
+Label(imgFrame, text="Original Image").grid(row=0, column=8)
+photolabel = Label(imgFrame, image=photo)
+photolabel.image = photo # keep a reference!
+photolabel.grid(row = 1, column=8)
+
+recphotolabel = Label(imgFrame, image=photo)
+recphotolabel.image = photo # keep a reference!
+recphotolabel.grid(row=9,column=8)
+
+button2 = Button(imgFrame, text="Change Quantization Matrix")
+button2.bind("<Button-1>", changePhoto) #binding funcs with widgets
+button2.grid(row=10, column=8)
+
+
 
 root.mainloop()
+
+
+
+
+
+
+
 
 

@@ -1,14 +1,10 @@
-import quantization as quant
-import numpy as np
-import ImageTransform as imt
-import dct 
+import Tkinter
+root = Tkinter.Tk(  )
+for r in range(3):
+    for c in range(4):
+        a = Tkinter.Label(root, text='R%s/C%s'%(r,c),
+            borderwidth=1 )
+        a.grid(row=r,column=c)
+        a.pack()
 
-imgQuant = quant.Quantization()
-quantMat = np.full([8,8], 1)
-imgQuant.initQTMatrix(quantMat)
-
-tmp = np.random.rand(8,8)
-
-tmpQ= imgQuant.quantize(tmp)
-
-print tmpQ
+root.mainloop(  )
