@@ -19,7 +19,10 @@ class Hier():
 		E_f_half = imt.ImageTransform.imresize(self.IMT.rgb2img(f_half), highResShape, 1)
 		E_f_half_RGB = np.array(E_f_half)
 
-		diffRGB = f - E_f_half_RGB
+		diffRGB = f.astype(int) - E_f_half_RGB.astype(int)
+		diffRGB[diffRGB<0] = 1
+		diffRGB[diffRGB>255] = 255
+		diffRGB = diffRGB.astype(np.uint8)
 		F_info, orgShape = coding.encode(np.array(diffRGB), self.quantMat)
 		recRGB, recImg2show = coding.decode(F_info, self.quantMat, orgShape)
 
@@ -38,7 +41,10 @@ class Hier():
 		E_f_half = imt.ImageTransform.imresize(self.IMT.rgb2img(halfRGB), diffShape, 1)
 		E_f_half_RGB = np.array(E_f_half)
 
-		fRecover = diffRGB + E_f_half_RGB
+		fRecover = diffRGB.astype(int) + E_f_half_RGB.astype(int)
+		fRecover[fRecover<0] = 1
+		fRecover[fRecover>255] = 255
+		fRecover = fRecover.astype(np.uint8)
 		fRecoverImg = self.IMT.rgb2img(fRecover)
 
 		return fRecover, fRecoverImg

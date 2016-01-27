@@ -10,7 +10,15 @@ def encode(imgRGB, quantMat):
 	#orgImage.showImage()
 
 	'''yuv transform'''
+
+
 	yuvImage = orgImage.rgb2yuv()
+	#print yuvImage[:,:,0]
+	#rgbImage = orgImage.yuv2rgb()
+
+	#print (rgbImage.dtype)
+	#orgImage.rgb2img(imgRGB).show()
+
 	#rgbImage = orgImage.yuv2rgb()
 	#rgbImage = rgbImage.astype(np.uint8)
 
@@ -46,9 +54,12 @@ def encode(imgRGB, quantMat):
 	imgQuant = quant.Quantization()
 	imgQuant.initQTMatrix(quantMat)
 
+	#print imgQuant.QuantMatrix.dtype
 	F_vecY_Quan = imgQuant.quanitzeVec(F_vecY)
 	F_vecCr_Quan = imgQuant.quanitzeVec(F_vecCr)
 	F_vecCb_Quan = imgQuant.quanitzeVec(F_vecCb)
+	
+	#print np.min((F_vecY_Quan))
 	F_info =  [F_vecY_Quan, F_vecCr_Quan, F_vecCb_Quan]
 	orgShape = np.shape(imgRGB)
 	return F_info, orgShape
@@ -72,8 +83,8 @@ def decode(F_info, quantMat, orgShape): #orgShape, orginal image shape
 	recoverImg.initEmptyImage(orgShape) #initialize the same size image
 
 	recoverImg.Y = dct.DCT.dvecMat(orgShape[0:2], f_vecY)
-	recoverImg.Cr = dct.DCT.dvecMat(np.array(orgShape[0:2])/2, f_vecCr)
-	recoverImg.Cb = dct.DCT.dvecMat(np.array(orgShape[0:2])/2, f_vecCb) 
+	recoverImg.Cr = dct.DCT.dvecMat(np.array(orgShape[0:2]), f_vecCr)
+	recoverImg.Cb = dct.DCT.dvecMat(np.array(orgShape[0:2]), f_vecCb) 
 
 	recoverImg.chromaExpand()
 
