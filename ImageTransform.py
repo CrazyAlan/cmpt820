@@ -43,18 +43,18 @@ class ImageTransform:
 
 	def chromaSub(self):
 		self.Y = self.yuv[:,:,0]
-		self.Cr = self.yuv[:,:,1]
-		self.Cb = self.yuv[:,:,2]
-		#self.Cr = self.yuv[0::2, 0::2, 1] #seems wrong on book
-		#self.Cb = self.yuv[0::2, 0::2, 2]
+		#self.Cr = self.yuv[:,:,1]
+		#self.Cb = self.yuv[:,:,2]
+		self.Cr = self.yuv[0::2, 0::2, 1] #seems wrong on book
+		self.Cb = self.yuv[0::2, 0::2, 2]
 
 	def chromaExpand(self):
 		self.yuv[:,:,0] = self.Y
-		self.yuv[:,:,1] = self.Cr
-		self.yuv[:,:,2] = self.Cb
+		#self.yuv[:,:,1] = self.Cr
+		#self.yuv[:,:,2] = self.Cb
 
-		#self.yuv[:,:,1] = np.repeat(np.repeat(self.Cr,2, axis=0), 2, axis=1)
-		#self.yuv[:,:,2] = np.repeat(np.repeat(self.Cb,2, axis=0), 2, axis=1)
+		self.yuv[:,:,1] = np.repeat(np.repeat(self.Cr,2, axis=0), 2, axis=1)
+		self.yuv[:,:,2] = np.repeat(np.repeat(self.Cb,2, axis=0), 2, axis=1)
 
 	def rgb2img(self, rgb):	
 		img = Image.fromarray(rgb)

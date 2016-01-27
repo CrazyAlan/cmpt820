@@ -83,8 +83,8 @@ def decode(F_info, quantMat, orgShape): #orgShape, orginal image shape
 	recoverImg.initEmptyImage(orgShape) #initialize the same size image
 
 	recoverImg.Y = dct.DCT.dvecMat(orgShape[0:2], f_vecY)
-	recoverImg.Cr = dct.DCT.dvecMat(np.array(orgShape[0:2]), f_vecCr)
-	recoverImg.Cb = dct.DCT.dvecMat(np.array(orgShape[0:2]), f_vecCb) 
+	recoverImg.Cr = dct.DCT.dvecMat(np.array(orgShape[0:2])/2, f_vecCr)
+	recoverImg.Cb = dct.DCT.dvecMat(np.array(orgShape[0:2])/2, f_vecCb) 
 
 	recoverImg.chromaExpand()
 
