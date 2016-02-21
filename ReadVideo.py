@@ -4,6 +4,7 @@ import cv2
 CONSTANT_VIDEO_PATH = "SampleVideo_360x240_50mb.mp4"
 cap = cv2.VideoCapture(CONSTANT_VIDEO_PATH)
 
+
 while(True):
     # Capture frame-by-frame
     ret, frame = cap.read()
@@ -23,7 +24,8 @@ while(True):
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-    cv2.imwrite("singleFrame.jpg", frame)
+    #i += 1
+    #cv2.imwrite("Frames/singleFrame"+str(i)+".jpg", frame)
 
 
 
