@@ -82,8 +82,10 @@ class MotionVecP(object):
         return mad
 
     def recoverPfromI(self, IFrame, motionVector):
+        
         refMat = np.array(IFrame, copy=True)
         refMat = self.stackReferencMat(refMat)
+        
         mbSize = self.defaultMBSize
 
         recPFrame = np.zeros_like(IFrame) 
@@ -99,6 +101,14 @@ class MotionVecP(object):
 
         return recPFrame
 
+    def diffFrame(self, IFrame):
+        #print("Hello")
+        motionVector = self.getMotionVecForAll()
+        recoveredPFrame = self.recoverPfromI(IFrame, motionVector)
+        diffResult = recoveredPFrame - self.Current
+
+        return diffResult
+
 class MotionVecB(MotionVecP):
     """docstring for MotionVecB"""
     def __init__(self, Ref1, Ref2, B):
@@ -108,27 +118,44 @@ class MotionVecB(MotionVecP):
 
         self.MATCH_MAD_THREASH_HOLD = 10
 
-    def getMotionVecForAll(self, refMat=None):
+    def getMotionVecForAll(self, refMat=None, madFlag=None):
         if refMat is None:
             refMat = self.Ref
         [motionVecRows, motionVecCols] = np.shape(self.Current) #2 dimension
         motionVecRows /= self.defaultMBSize
         motionVecCols /= self.defaultMBSize
         motionVect = np.zeros([motionVecRows, motionVecCols,2])
-        minMad = 0
+        minMad = np.zeros([motionVecRows, motionVecCols])
 
         for i in range(motionVecRows):
             for j in range(motionVecCols):
                 tmpCorner = [i*self.defaultMBSize, j*self.defaultMBSize]
-                (motionVect[i, j, :], minMad) = self.getMotionVecForOne(refMat, tmpCorner, True)
+                (motionVect[i, j, :], minMad[i,j]) = self.getMotionVecForOne(refMat, tmpCorner, True)
                 #print minMad
-        return motionVect
+        if madFlag == None:
+           return motionVect
+        else:
+            return (motionVect, minMad)
 
     def getTwoMotionVector(self):
-        motionVect1 = self.getMotionVecForAll() # Get motion Vector for Ref 1
-        motionVect2 = self.getMotionVecForAll(self.Ref2) #Get Motion Vector for Ref2
+        (motionVect1, minMad1) = self.getMotionVecForAll(None, True) # Get motion Vector for Ref 1
+        (motionVect2, minMad2) = self.getMotionVecForAll(self.Ref2, True) #Get Motion Vector for Ref2
+        #print sum(motionVect1-motionVect2)
+        return (motionVect1, minMad1, motionVect2, minMad2)
 
-        return (motionVect1, motionVect2)
+    def diffFrame(self,Ref1, Ref2):
+        (motionVect1, minMad1, motionVect2, minMad2) = self.getTwoMotionVector()
+
+        recoveredImage1 = self.recoverPfromI(Ref1,motionVect1)
+        recoveredImage2 = self.recoverPfromI(Ref2,motionVect1)
+        #averageImage = (recoveredImage1+recoveredImage2)/2
+        
+
+        return (recoveredImage1, recoveredImage1)
+
+            
+
+
 
            
 
