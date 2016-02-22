@@ -1,5 +1,5 @@
 import numpy as np
-class MotionVecP():
+class MotionVecP(object):
     """This class is for motion vector search"""
     def __init__(self, I, P):
         #Motion Position Matrix
@@ -8,18 +8,19 @@ class MotionVecP():
         self.Ref = I 
         self.Current = P
         self.defaultMBSize = 16
-        self.stackReferencMat() #Extend the reference for compare
+        self.Ref = self.stackReferencMat(self.Ref) #Extend the reference for compare
 
 
-    def stackReferencMat(self):
-        [rows, cols] = np.shape(self.Ref) #2 dimension
+    def stackReferencMat(self, stackMat):
+        [rows, cols] = np.shape(stackMat) #2 dimension
 
-        self.Ref = np.vstack((self.Ref, np.zeros([self.offset*2,cols]))) #Extend Bottom
-        self.Ref = np.vstack((np.zeros([self.offset*2,cols]), self.Ref)) #Extend Up
-        self.Ref = np.hstack((self.Ref, np.zeros([rows+2*self.offset*2, self.offset*2]))) #Extend Right, added more rows
-        self.Ref = np.hstack((np.zeros([rows+2*self.offset*2, self.offset*2]) ,self.Ref)) #Extend Left, added more rows
+        stackMat = np.vstack((stackMat, np.zeros([self.offset*2,cols]))) #Extend Bottom
+        stackMat = np.vstack((np.zeros([self.offset*2,cols]), stackMat)) #Extend Up
+        stackMat = np.hstack((stackMat, np.zeros([rows+2*self.offset*2, self.offset*2]))) #Extend Right, added more rows
+        stackMat = np.hstack((np.zeros([rows+2*self.offset*2, self.offset*2]) ,stackMat)) #Extend Left, added more rows
+        return stackMat
 
-    def getMotionVecForOne(self, leftUpCorner):
+    def getMotionVecForOne(self, refMat, leftUpCorner):
         last = False
         minMad = 2**31 #Largest integer 
         localOffset = self.offset
@@ -36,7 +37,7 @@ class MotionVecP():
                 displacement = localOffset*self.aroundMatrix[i]
                 #print(i,'i')
                 #print(regCorner,'regCorner')
-                mad = self.getMad(P_part, regCorner, displacement, mbSize)
+                mad = self.getMad(refMat, P_part, regCorner, displacement, mbSize)
                 #print mad
                 if mad < minMad:
                     #print('updatedCorner', updatedCorner)
@@ -50,7 +51,9 @@ class MotionVecP():
         #print updatedCorner-orgCorner
         return updatedCorner-orgCorner
 
-    def getMotionVecForAll(self):
+    def getMotionVecForAll(self, refMat=None):
+        if refMat is None:
+            refMat = self.Ref
         [motionVecRows, motionVecCols] = np.shape(self.Current) #2 dimension
         motionVecRows /= self.defaultMBSize
         motionVecCols /= self.defaultMBSize
@@ -59,22 +62,24 @@ class MotionVecP():
         for i in range(motionVecRows):
             for j in range(motionVecCols):
                 tmpCorner = [i*self.defaultMBSize, j*self.defaultMBSize]
-                motionVect[i, j, :] = self.getMotionVecForOne(tmpCorner)
+                motionVect[i, j, :] = self.getMotionVecForOne(refMat, tmpCorner)
 
         return motionVect
             
 
-    def getMad(self, P_part, leftUpCornerCurrentFrame, displacement, mbSize):
+    def getMad(self,refMat, P_part, leftUpCornerCurrentFrame, displacement, mbSize):
         #[row_0, col_0] = leftUpCornerCurrentFrame
         [row_d, col_d] = displacement + leftUpCornerCurrentFrame + [self.offset*2,self.offset*2]#
         
         #print "P_part"
-        I_part = self.Ref[row_d:row_d+mbSize, col_d:col_d+mbSize] #I frame part
+        I_part = refMat[row_d:row_d+mbSize, col_d:col_d+mbSize] #I frame part
         #print('P_part',np.shape(P_part))
         mad = np.mean(abs(P_part-I_part)) # Mean Absolute
         return mad
 
     def recoverPfromI(self, IFrame, motionVector):
+        refMat = np.array(IFrame, copy=True)
+        refMat = self.stackReferencMat(refMat)
         mbSize = self.defaultMBSize
 
         recPFrame = np.zeros_like(IFrame) 
@@ -86,10 +91,20 @@ class MotionVecP():
                 #print motionVector[i,j,:]
                 [rowPos, colPos] = motionVector[i,j,:] + [i*mbSize, j*mbSize] + [self.offset*2, self.offset*2]
                 #print rowPos,rowPos+mbSize,colPos,colPos+mbSize
-                recPFrame[i*mbSize:(i+1)*mbSize, j*mbSize:(j+1)*mbSize] = self.Ref[rowPos:rowPos+mbSize,colPos:colPos+mbSize]
+                recPFrame[i*mbSize:(i+1)*mbSize, j*mbSize:(j+1)*mbSize] = refMat[rowPos:rowPos+mbSize,colPos:colPos+mbSize]
 
         return recPFrame
 
+class MotionVecB(MotionVecP):
+    """docstring for MotionVecB"""
+    def __init__(self, Ref1, Ref2, B):
+        super(MotionVecB, self).__init__(Ref1,B)
+        self.Ref2 = Ref2 
+        self.stackReferencMat(self.Ref2)    
+
+        self.MATCH_MAD_THREASH_HOLD = 10
+
+           
 
 
 
