@@ -20,7 +20,7 @@ class MotionVecP(object):
         stackMat = np.hstack((np.zeros([rows+2*self.offset*2, self.offset*2]) ,stackMat)) #Extend Left, added more rows
         return stackMat
 
-    def getMotionVecForOne(self, refMat, leftUpCorner):
+    def getMotionVecForOne(self, refMat, leftUpCorner, madFlag = None):
         last = False
         minMad = 2**31 #Largest integer 
         localOffset = self.offset
@@ -49,7 +49,11 @@ class MotionVecP(object):
 
             localOffset /= 2
         #print updatedCorner-orgCorner
-        return updatedCorner-orgCorner
+        if madFlag == None:
+            return updatedCorner-orgCorner
+        else:
+            return (updatedCorner-orgCorner,minMad)
+        
 
     def getMotionVecForAll(self, refMat=None):
         if refMat is None:
@@ -103,6 +107,22 @@ class MotionVecB(MotionVecP):
         self.Ref2 = self.stackReferencMat(self.Ref2)    
 
         self.MATCH_MAD_THREASH_HOLD = 10
+
+    def getMotionVecForAll(self, refMat=None):
+        if refMat is None:
+            refMat = self.Ref
+        [motionVecRows, motionVecCols] = np.shape(self.Current) #2 dimension
+        motionVecRows /= self.defaultMBSize
+        motionVecCols /= self.defaultMBSize
+        motionVect = np.zeros([motionVecRows, motionVecCols,2])
+        minMad = 0
+
+        for i in range(motionVecRows):
+            for j in range(motionVecCols):
+                tmpCorner = [i*self.defaultMBSize, j*self.defaultMBSize]
+                (motionVect[i, j, :], minMad) = self.getMotionVecForOne(refMat, tmpCorner, True)
+                #print minMad
+        return motionVect
 
     def getTwoMotionVector(self):
         motionVect1 = self.getMotionVecForAll() # Get motion Vector for Ref 1
