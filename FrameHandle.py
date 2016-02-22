@@ -1,10 +1,25 @@
 import numpy as np
 import cv2
+import MotionVec 
 
 
-frames = 
-while True:
-	cv2.imshow("image", frame1)
+#Read All Frames
+frames = []
+for i in xrange(30,40):
+	tmpFrame = cv2.imread("Frames/singleFrame"+str(i)+".tif")
+	cv2.imshow('image', tmpFrame)
+	frames.append(tmpFrame)
 
-	if cv2.waitKey(1) & 0xFF == ord('q'):
-		break
+
+
+
+
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+
+
+
+#	if cv2.waitKey(1) & 0xFF == ord('q'):
+#		break
