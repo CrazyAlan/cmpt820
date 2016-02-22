@@ -100,9 +100,15 @@ class MotionVecB(MotionVecP):
     def __init__(self, Ref1, Ref2, B):
         super(MotionVecB, self).__init__(Ref1,B)
         self.Ref2 = Ref2 
-        self.stackReferencMat(self.Ref2)    
+        self.Ref2 = self.stackReferencMat(self.Ref2)    
 
         self.MATCH_MAD_THREASH_HOLD = 10
+
+    def getTwoMotionVector(self):
+        motionVect1 = self.getMotionVecForAll() # Get motion Vector for Ref 1
+        motionVect2 = self.getMotionVecForAll(self.Ref2) #Get Motion Vector for Ref2
+
+        return (motionVect1, motionVect2)
 
            
 
