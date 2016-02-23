@@ -20,7 +20,7 @@ class PFrameHandle():
 
 	def encode3Channels(self, IFrame, PFrame):
 		yuvI = self.IMT.rgb2yuv(IFrame)
-		yuvP = self.IMT.rgb2yuv(IFrame)
+		yuvP = self.IMT.rgb2yuv(PFrame)
 
 		[Y_I, Cr_I, Cb_I] = self.IMT.chromaSub(yuvI)
 		[Y_P, Cr_P, Cb_P] = self.IMT.chromaSub(yuvP)
@@ -40,8 +40,9 @@ class PFrameHandle():
 		return [diffEstAndReal, motionVector]
 
 	def decode3Channels(self, IFrame, diffAndmotionVector):
+		yuvI = self.IMT.rgb2yuv(IFrame)
 
-		[Y_I, Cr_I, Cb_I] = self.IMT.chromaSub(IFrame)
+		[Y_I, Cr_I, Cb_I] = self.IMT.chromaSub(yuvI)
 		[diffY, motionVectorY, diffCr, motionVectorCr, diffCb, motionVectorCb] = diffAndmotionVector		
 
 		Y_P = self.decode(Y_I, diffY, motionVectorY)
@@ -50,9 +51,9 @@ class PFrameHandle():
 
 		#Expand all 3 channels
 		yuvRec = self.IMT.chromaExpand(Y_P, Cr_P, Cb_P)
-		#rgbImRec = self.IMT.yuv2rgb(yuvRec)
+		rgbImRec = self.IMT.yuv2rgb(yuvRec)
 
-		return yuvRec
+		return rgbImRec
 
 	def decode(self, IFrame, diff,  motionVector):
 		mvP = MotionVecP(IFrame, IFrame) #Here use both I frame to initialize, as no need for Pframe
