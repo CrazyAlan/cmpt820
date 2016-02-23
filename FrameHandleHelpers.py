@@ -15,25 +15,35 @@ Decode:
 '''
 class PFrameHandle():
 	def __init__(self):
-		self.data = []
+		self.data1 = []
+		self.data2 = []
+
 		self.IMT = ImageTransform()
+
 
 	def encode3Channels(self, IFrame, PFrame):
 		yuvI = self.IMT.rgb2yuv(IFrame)
 		yuvP = self.IMT.rgb2yuv(IFrame)
 
-		[Y_I, Cr_I, Cb_I] = self.IMT.chromaSub(yuvI)
-		[Y_P, Cr_P, Cb_P] = self.IMT.chromaSub(yuvP)
+		[Y_I, Cr_I, Cb_I] = self.IMT.chromaUnpack(yuvI)
+		[Y_P, Cr_P, Cb_P] = self.IMT.chromaUnpack(yuvP)
+		self.data1 = Y_P
+
 
 		[diffY, motionVectorY] = self.encode(Y_I,Y_P)
-		[diffCr, motionVectorCr] = self.encode(Cr_I,Cr_P)
-		[diffCb, motionVectorCb] = self.encode(Cb_I,Cb_P)
+		[diffCr, motionVectorCr] = self.encode(Cr_I,Cr_P, motionVectorY)
+		[diffCb, motionVectorCb] = self.encode(Cb_I,Cb_P, motionVectorY)
 
 		return [diffY, motionVectorY, diffCr, motionVectorCr, diffCb, motionVectorCb]
 	
-	def encode(self, IFrame, PFrame):
+	def encode(self, IFrame, PFrame, motionVector=None):
 		mvP = MotionVecP(IFrame, PFrame) #Initialize A instance
-		motionVector = mvP.getMotionVecForAll()
+		if motionVector  is None:
+			motionVector = mvP.getMotionVecForAll()
+			print "No Motion Vector"
+		else:
+			print "Have Motion Vector"
+
 		estimatedPFrame = mvP.recoverPfromI(IFrame, motionVector)
 		diffEstAndReal = PFrame - estimatedPFrame 
 
@@ -41,16 +51,17 @@ class PFrameHandle():
 
 	def decode3Channels(self, IFrame, diffAndmotionVector):
 
-		[Y_I, Cr_I, Cb_I] = self.IMT.chromaSub(IFrame)
+		[Y_I, Cr_I, Cb_I] = self.IMT.chromaUnpack(IFrame)
 		[diffY, motionVectorY, diffCr, motionVectorCr, diffCb, motionVectorCb] = diffAndmotionVector		
 
 		Y_P = self.decode(Y_I, diffY, motionVectorY)
 		Cr_P = self.decode(Cr_I, diffCr, motionVectorCr)
 		Cb_P = self.decode(Cb_I, diffCb, motionVectorCb)
+		self.data2 = Y_P
 
 		#Expand all 3 channels
-		yuvRec = self.IMT.chromaExpand(Y_P, Cr_P, Cb_P)
-		#rgbImRec = self.IMT.yuv2rgb(yuvRec)
+		yuvRec = self.IMT.chromaPack(Y_P, Cr_P, Cb_P)
+		rgbImRec = self.IMT.yuv2rgb(yuvRec)
 
 		return yuvRec
 
@@ -67,9 +78,6 @@ class BFrameHandle():
 	def __init__(self):
 		self.data = []
 
-class IFrameHandle():
-	def __init__(self):
-		self.data = []	
 
 
 
@@ -102,6 +110,8 @@ if __name__ == '__main__':
 	rgbImage = PHand.decode3Channels(IFrame, diffAndMotion)
 
 
-	cv2.imshow('image', IMT.double2uintImage(rgbImage[:,:,:]))
+	cv2.imshow('image', IMT.double2uintImage(rgbImage))
+	#cv2.imshow('image', IMT.double2uintImage(PHand.data2))
+
 	cv2.waitKey(0)
 	cv2.destroyAllWindows()

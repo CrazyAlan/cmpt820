@@ -20,18 +20,11 @@ IT.QuantizationMatrix(0)
 Displaying Sequence: I B B P B B P B B I 
 Coding Sequence I P B B P B B I B B 
 '''
-#for i in range(1): #10 frames handle
+for i in range(1): #10 frames handle
 	
 	#Read Image Frames as double
-	#rgbIm1 = IMT.im2double(frames[i])
-IFrame = IMT.im2double(frames[3])
-PFrame = IMT.im2double(frames[4])
+	rgbIm1 = IMT.im2double(frames[i])
 
-PHand = PFrameHandle()
-diffAndMotion = PHand.encode3Channels(IFrame, PFrame)
-
-rgbImage = PHand.decode3Channels(IFrame, diffAndMotion)
-'''
 	#YUV transform
 	yuvIm1 = IMT.rgb2yuv(rgbIm1)
 	[Y, Cr, Cb] = IMT.chromaSub(yuvIm1)
@@ -56,7 +49,7 @@ rgbImage = PHand.decode3Channels(IFrame, diffAndMotion)
 	#Recover
 	yuvIm1Rec = IMT.chromaExpand(vecYRec, Cr, Cb)
 	rgbIm1Rec = IMT.yuv2rgb(yuvIm1)
-'''
+
 
 '''
 IFrame = frames[0][:,:,0]
@@ -88,7 +81,7 @@ recPFrame2 = mvB2.recoverPfromI(IFrame,PFrame,motionInfo)
 
 
 
-cv2.imshow('image', IMT.double2uintImage(rgbImage[:,:,1]))
+cv2.imshow('image', IMT.double2uintImage(Cb))
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 

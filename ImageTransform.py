@@ -54,12 +54,27 @@ class ImageTransform:
 		Cb = yuv[0::2, 0::2, 2]
 		return [Y, Cr, Cb]
 
+	def chromaUnpack(self, yuv):
+		Y = yuv[:,:,0]
+		Cr = yuv[:,:, 1] #seems wrong on book
+		Cb = yuv[:, :, 2]
+		return [Y, Cr, Cb]
+
 	def chromaExpand(self, Y, Cr, Cb):
 		[rows, cols] = np.shape(Y)
 		yuv = np.zeros([rows, cols, 3])
 		yuv[:,:,0] = Y
 		yuv[:,:,1] = np.repeat(np.repeat(Cr,2, axis=0), 2, axis=1)
 		yuv[:,:,2] = np.repeat(np.repeat(Cb,2, axis=0), 2, axis=1)
+
+		return yuv
+
+	def chromaPack(self, Y, Cr, Cb):
+		[rows, cols] = np.shape(Y)
+		yuv = np.zeros([rows, cols, 3])
+		yuv[:,:,0] = Y
+		yuv[:,:,1] = Cr
+		yuv[:,:,2] = Cb
 
 		return yuv
 
