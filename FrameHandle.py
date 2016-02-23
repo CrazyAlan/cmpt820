@@ -88,7 +88,7 @@ recPFrame2 = mvB2.recoverPfromI(IFrame,PFrame,motionInfo)
 
 
 
-cv2.imshow('image', IMT.double2uintImage(rgbImage[:,:,1]))
+cv2.imshow('image', IMT.double2uintImage(rgbImage))
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 

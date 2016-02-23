@@ -14,9 +14,11 @@ Decode:
 	Input: Reference IFrame, difference Image,  MotionVector
 '''
 class PFrameHandle():
-	def __init__(self):
+	def __init__(self,QP):
 		self.data = []
 		self.IMT = ImageTransform()
+		self.IT = IntegerTransform()
+		self.IT.QuantizationMatrix(QP)
 
 	def encode3Channels(self, IFrame, PFrame):
 		yuvI = self.IMT.rgb2yuv(IFrame)
@@ -35,9 +37,13 @@ class PFrameHandle():
 		mvP = MotionVecP(IFrame, PFrame) #Initialize A instance
 		motionVector = mvP.getMotionVecForAll()
 		estimatedPFrame = mvP.recoverPfromI(IFrame, motionVector)
-		diffEstAndReal = PFrame - estimatedPFrame 
+		diffEstMinusReal = PFrame - estimatedPFrame 
 
-		return [diffEstAndReal, motionVector]
+		# Integer Transfer		
+		diffEstMinusRealVec = IMT.vecMat(diffEstMinusReal, 4)
+		diffEstMinusRealVecIntTran = IT.EnIntegerTransformVec(diffEstMinusRealVec)
+
+		return [diffEstMinusRealVecIntTran, motionVector]
 
 	def decode3Channels(self, IFrame, diffAndmotionVector):
 		yuvI = self.IMT.rgb2yuv(IFrame)
@@ -58,7 +64,13 @@ class PFrameHandle():
 	def decode(self, IFrame, diff,  motionVector):
 		mvP = MotionVecP(IFrame, IFrame) #Here use both I frame to initialize, as no need for Pframe
 		estimatedPFrame = mvP.recoverPfromI(IFrame, motionVector)
-		PFrame = estimatedPFrame + diff
+		
+		#DeInteger Transform for diff
+		diffDetraned = self.IT.DeIntegerTransformVec(diff)
+		diffRec = IMT.dvecMat(np.shape(IFrame), diffDetraned, 4)
+
+		PFrame = estimatedPFrame + diffRec
+
 
 		return PFrame
 
@@ -67,11 +79,6 @@ class PFrameHandle():
 class BFrameHandle():
 	def __init__(self):
 		self.data = []
-
-class IFrameHandle():
-	def __init__(self):
-		self.data = []	
-
 
 
 if __name__ == '__main__':
@@ -97,7 +104,7 @@ if __name__ == '__main__':
 	IFrame = IMT.im2double(frames[3])
 	PFrame = IMT.im2double(frames[4])
 
-	PHand = PFrameHandle()
+	PHand = PFrameHandle(0)
 	diffAndMotion = PHand.encode3Channels(IFrame, PFrame)
 
 	rgbImage = PHand.decode3Channels(IFrame, diffAndMotion)
