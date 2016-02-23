@@ -40,8 +40,8 @@ class PFrameHandle():
 		diffEstMinusReal = PFrame - estimatedPFrame 
 
 		# Integer Transfer		
-		diffEstMinusRealVec = IMT.vecMat(diffEstMinusReal, 4)
-		diffEstMinusRealVecIntTran = IT.EnIntegerTransformVec(diffEstMinusRealVec)
+		diffEstMinusRealVec = self.IMT.vecMat(diffEstMinusReal, 4)
+		diffEstMinusRealVecIntTran = self.IT.EnIntegerTransformVec(diffEstMinusRealVec)
 
 		return [diffEstMinusRealVecIntTran, motionVector]
 
@@ -67,7 +67,7 @@ class PFrameHandle():
 		
 		#DeInteger Transform for diff
 		diffDetraned = self.IT.DeIntegerTransformVec(diff)
-		diffRec = IMT.dvecMat(np.shape(IFrame), diffDetraned, 4)
+		diffRec = self.IMT.dvecMat(np.shape(IFrame), diffDetraned, 4)
 
 		PFrame = estimatedPFrame + diffRec
 
@@ -90,8 +90,7 @@ if __name__ == '__main__':
 	    frames.append(tmpFrame)
 
 	IMT = ImageTransform()
-	IT = IntegerTransform()
-	IT.QuantizationMatrix(0)
+	
 
 	'''
 	Displaying Sequence: I B B P B B P B B I 
@@ -109,7 +108,7 @@ if __name__ == '__main__':
 
 	rgbImage = PHand.decode3Channels(IFrame, diffAndMotion)
 
-
+	#print(np.sum(rgbImage-PFrame))
 	cv2.imshow('image', IMT.double2uintImage(rgbImage[:,:,:]))
 	cv2.waitKey(0)
 	cv2.destroyAllWindows()
