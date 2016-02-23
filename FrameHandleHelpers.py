@@ -62,7 +62,7 @@ class PFrameHandle():
 		return rgbImRec
 
 	def decode(self, IFrame, diff,  motionVector):
-		mvP = MotionVecP(IFrame, IFrame) #Here use both I frame to initialize, as no need for Pframe
+		mvP = MotionVecP(IFrame, np.zeros_like(IFrame)) #Here use both I frame to initialize, as no need for Pframe
 		estimatedPFrame = mvP.recoverPfromI(IFrame, motionVector)
 		
 		#DeInteger Transform for diff
@@ -76,9 +76,6 @@ class PFrameHandle():
 
 
 
-class BFrameHandle():
-	def __init__(self):
-		self.data = []
 
 
 if __name__ == '__main__':
