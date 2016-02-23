@@ -23,11 +23,11 @@ class PFrameHandle():
 
 	def encode3Channels(self, IFrame, PFrame):
 		yuvI = self.IMT.rgb2yuv(IFrame)
-		yuvP = self.IMT.rgb2yuv(IFrame)
+		yuvP = self.IMT.rgb2yuv(PFrame)
 
 		[Y_I, Cr_I, Cb_I] = self.IMT.chromaUnpack(yuvI)
 		[Y_P, Cr_P, Cb_P] = self.IMT.chromaUnpack(yuvP)
-		self.data1 = Y_P
+		#self.data1 = Cr_P
 
 
 		[diffY, motionVectorY] = self.encode(Y_I,Y_P)
@@ -40,9 +40,10 @@ class PFrameHandle():
 		mvP = MotionVecP(IFrame, PFrame) #Initialize A instance
 		if motionVector  is None:
 			motionVector = mvP.getMotionVecForAll()
-			print "No Motion Vector"
+			#print "No Motion Vector"
 		else:
-			print "Have Motion Vector"
+			pass
+			#print "Have Motion Vector"
 
 		estimatedPFrame = mvP.recoverPfromI(IFrame, motionVector)
 		diffEstAndReal = PFrame - estimatedPFrame 
@@ -50,27 +51,27 @@ class PFrameHandle():
 		return [diffEstAndReal, motionVector]
 
 	def decode3Channels(self, IFrame, diffAndmotionVector):
+		yuvI = self.IMT.rgb2yuv(IFrame)
 
-		[Y_I, Cr_I, Cb_I] = self.IMT.chromaUnpack(IFrame)
+		[Y_I, Cr_I, Cb_I] = self.IMT.chromaUnpack(yuvI)
 		[diffY, motionVectorY, diffCr, motionVectorCr, diffCb, motionVectorCb] = diffAndmotionVector		
 
 		Y_P = self.decode(Y_I, diffY, motionVectorY)
 		Cr_P = self.decode(Cr_I, diffCr, motionVectorCr)
 		Cb_P = self.decode(Cb_I, diffCb, motionVectorCb)
-		self.data2 = Y_P
 
 		#Expand all 3 channels
 		yuvRec = self.IMT.chromaPack(Y_P, Cr_P, Cb_P)
 		rgbImRec = self.IMT.yuv2rgb(yuvRec)
 
-		return yuvRec
+		return rgbImRec
 
 	def decode(self, IFrame, diff,  motionVector):
-		mvP = MotionVecP(IFrame, IFrame) #Here use both I frame to initialize, as no need for Pframe
+		mvP = MotionVecP(IFrame, np.zeros_like(IFrame)) #Here use both I frame to initialize, as no need for Pframe
 		estimatedPFrame = mvP.recoverPfromI(IFrame, motionVector)
 		PFrame = estimatedPFrame + diff
 
-		return PFrame
+		return estimatedPFrame
 
 
 
