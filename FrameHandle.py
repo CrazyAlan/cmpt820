@@ -3,6 +3,7 @@ import cv2
 from MotionVec import *
 from IntegerTransform import *
 from ImageTransform import *
+from Intra4by4Coding import *
 
 
 frames = []
@@ -19,6 +20,11 @@ rgbIm1 = IMT.im2double(frames[1])
 #YUV transform
 yuvIm1 = IMT.rgb2yuv(rgbIm1)
 [Y, Cr, Cb] = IMT.chromaSub(yuvIm1)
+
+#Intra Coding
+IC = IntraCoding()
+Y_r = IC.IntraCodingVec(Y)
+
 
 #Integer Transform
 IT = IntegerTransform()
@@ -72,7 +78,7 @@ recPFrame2 = mvB2.recoverPfromI(IFrame,PFrame,motionInfo)
 
 
 
-cv2.imshow('image', IMT.double2uintImage(vecYRec))
+cv2.imshow('image', IMT.double2uintImage(Y_r))
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
