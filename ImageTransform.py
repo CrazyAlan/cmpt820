@@ -18,6 +18,18 @@ class ImageTransform:
 		self.rgb = rgbImg
 		self.img = self.rgb2img(rgbImg)
 		
+	def im2double(self, rgbImg):
+		doubleRGBImage = rgbImg.astype(np.float32)
+		return doubleRGBImage
+	def double2uintImage(self, doubleImg):
+		minValue = np.amin(doubleImg)
+		if minValue < 0:
+			doubleImg += abs(minValue)
+		maxValue = np.amax(doubleImg)
+		doubleImg /= maxValue
+		doubleImg *= 255
+		uintImage = doubleImg.astype(np.uint8)
+		return uintImage
 
 	def readImage(self, path):
 		self.img = Image.open(path)
@@ -27,34 +39,29 @@ class ImageTransform:
 	def showImage(self):
 		self.img.show()
 
-	def rgb2yuv(self):
-		self.yuv = (self.rgb).dot(np.transpose(self.rgb2yuvMat))
-		return self.yuv
-	def yuv2rgb(self):
-		self.rgb = (self.yuv).dot(np.transpose(self.yuv2rgbMat))
-		#print self.rgb
-		self.rgb[self.rgb<0] = 0
-		self.rgb[self.rgb>255] = 255
-		#print np.max(self.rgb)
-		#print np.min(self.rgb)
+	def rgb2yuv(self, rgb):
+		yuv = (rgb).dot(np.transpose(self.rgb2yuvMat))
+		return yuv
 
-		self.rgb = self.rgb.astype(np.uint8)
-	  	return self.rgb
+	def yuv2rgb(self, yuv):
+		rgb = (yuv).dot(np.transpose(self.yuv2rgbMat))
+	
+	  	return rgb
 
-	def chromaSub(self):
-		self.Y = self.yuv[:,:,0]
-		#self.Cr = self.yuv[:,:,1]
-		#self.Cb = self.yuv[:,:,2]
-		self.Cr = self.yuv[0::2, 0::2, 1] #seems wrong on book
-		self.Cb = self.yuv[0::2, 0::2, 2]
+	def chromaSub(self, yuv):
+		Y = yuv[:,:,0]
+		Cr = yuv[0::2, 0::2, 1] #seems wrong on book
+		Cb = yuv[0::2, 0::2, 2]
+		return [Y, Cr, Cb]
 
-	def chromaExpand(self):
-		self.yuv[:,:,0] = self.Y
-		#self.yuv[:,:,1] = self.Cr
-		#self.yuv[:,:,2] = self.Cb
+	def chromaExpand(self, Y, Cr, Cb):
+		[rows, cols] = np.shape(Y)
+		yuv = np.zeros([rows, cols, 3])
+		yuv[:,:,0] = Y
+		yuv[:,:,1] = np.repeat(np.repeat(Cr,2, axis=0), 2, axis=1)
+		yuv[:,:,2] = np.repeat(np.repeat(Cb,2, axis=0), 2, axis=1)
 
-		self.yuv[:,:,1] = np.repeat(np.repeat(self.Cr,2, axis=0), 2, axis=1)
-		self.yuv[:,:,2] = np.repeat(np.repeat(self.Cb,2, axis=0), 2, axis=1)
+		return yuv
 
 	def rgb2img(self, rgb):	
 		img = Image.fromarray(rgb)
