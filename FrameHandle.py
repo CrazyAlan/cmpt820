@@ -3,44 +3,60 @@ import cv2
 from MotionVec import *
 from IntegerTransform import *
 from ImageTransform import *
-
+from FrameHandleHelpers import *
 
 frames = []
+
 for i in xrange(30,40):
     tmpFrame = cv2.imread("Frames/singleFrame"+str(i)+".tif")
    # cv2.imshow('image', tmpFrame)
     frames.append(tmpFrame)
 
-#Read Image Frames as double
 IMT = ImageTransform()
-rgbIm1 = IMT.im2double(frames[1])
-
-
-#YUV transform
-yuvIm1 = IMT.rgb2yuv(rgbIm1)
-[Y, Cr, Cb] = IMT.chromaSub(yuvIm1)
-
-#Integer Transform
 IT = IntegerTransform()
 IT.QuantizationMatrix(0)
 
-#Vectorize
-vecY = IMT.vecMat(Y, 4)
+'''
+Displaying Sequence: I B B P B B P B B I 
+Coding Sequence I P B B P B B I B B 
+'''
+#for i in range(1): #10 frames handle
+	
+	#Read Image Frames as double
+	#rgbIm1 = IMT.im2double(frames[i])
+IFrame = IMT.im2double(frames[0])
+PFrame = IMT.im2double(frames[1])
 
-#Integer Transform
-vecYIntTran = IT.EnIntegerTransformVec(vecY)
+PHand = PFrameHandle()
+diffAndMotion = PHand.encode3Channels(IFrame, PFrame)
+
+rgbImage = PHand.decode3Channels(IFrame, diffAndMotion)
+'''
+	#YUV transform
+	yuvIm1 = IMT.rgb2yuv(rgbIm1)
+	[Y, Cr, Cb] = IMT.chromaSub(yuvIm1)
+
+	#Integer Transform
 
 
-#DeInteger Transform
-vecYIntDeTran = IT.DeIntegerTransformVec(vecYIntTran)
+	#Vectorize
+	vecY = IMT.vecMat(Y, 4)
 
-#Devectorize
-vecYRec = IMT.dvecMat(np.shape(Y), vecYIntDeTran, 4)
+	#Integer Transform
+	vecYIntTran = IT.EnIntegerTransformVec(vecY)
 
-print np.shape(vecYRec)
-#Recover
-yuvIm1Rec = IMT.chromaExpand(vecYRec, Cr, Cb)
-rgbIm1Rec = IMT.yuv2rgb(yuvIm1)
+
+	#DeInteger Transform
+	vecYIntDeTran = IT.DeIntegerTransformVec(vecYIntTran)
+
+	#Devectorize
+	vecYRec = IMT.dvecMat(np.shape(Y), vecYIntDeTran, 4)
+
+	#print np.shape(vecYRec)
+	#Recover
+	yuvIm1Rec = IMT.chromaExpand(vecYRec, Cr, Cb)
+	rgbIm1Rec = IMT.yuv2rgb(yuvIm1)
+'''
 
 '''
 IFrame = frames[0][:,:,0]
@@ -72,12 +88,12 @@ recPFrame2 = mvB2.recoverPfromI(IFrame,PFrame,motionInfo)
 
 
 
-cv2.imshow('image', IMT.double2uintImage(vecYRec))
+cv2.imshow('image', IMT.double2uintImage(rgbImage))
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
 
-
+	
 
 #	if cv2.waitKey(1) & 0xFF == ord('q'):
 #		break

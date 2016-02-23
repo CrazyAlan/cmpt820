@@ -82,6 +82,8 @@ class MotionVecP(object):
         mad = np.mean(abs(P_part-I_part)) # Mean Absolute
         return mad
 
+    
+
     def recoverPfromI(self, IFrame, motionVector):
         
         refMat = np.array(IFrame, copy=True)
