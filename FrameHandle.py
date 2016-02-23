@@ -11,16 +11,37 @@ for i in xrange(30,40):
    # cv2.imshow('image', tmpFrame)
     frames.append(tmpFrame)
 
-
+#Read Image Frames as double
 IMT = ImageTransform()
 rgbIm1 = IMT.im2double(frames[1])
+
+
+#YUV transform
 yuvIm1 = IMT.rgb2yuv(rgbIm1)
 [Y, Cr, Cb] = IMT.chromaSub(yuvIm1)
 
-yuvIm1Rec = IMT.chromaExpand(Y, Cr, Cb)
-print yuvIm1Rec.dtype
+#Integer Transform
+IT = IntegerTransform()
+IT.QuantizationMatrix(0)
+
+#Vectorize
+vecY = IMT.vecMat(Y, 4)
+
+#Integer Transform
+vecYIntTran = IT.EnIntegerTransformVec(vecY)
+
+
+#DeInteger Transform
+vecYIntDeTran = IT.DeIntegerTransformVec(vecYIntTran)
+
+#Devectorize
+vecYRec = IMT.dvecMat(np.shape(Y), vecYIntDeTran, 4)
+
+print np.shape(vecYRec)
+#Recover
+yuvIm1Rec = IMT.chromaExpand(vecYRec, Cr, Cb)
 rgbIm1Rec = IMT.yuv2rgb(yuvIm1)
-print rgbIm1Rec.dtype
+
 '''
 IFrame = frames[0][:,:,0]
 BFrame1 = frames[1][:,:,0]
@@ -51,7 +72,7 @@ recPFrame2 = mvB2.recoverPfromI(IFrame,PFrame,motionInfo)
 
 
 
-cv2.imshow('image', IMT.double2uintImage(rgbIm1Rec))
+cv2.imshow('image', IMT.double2uintImage(vecYRec))
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 

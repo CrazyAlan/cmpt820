@@ -67,6 +67,27 @@ class ImageTransform:
 		img = Image.fromarray(rgb)
 		return img
 
+	#vectorize the matrix
+	def vecMat(self, inMat, bSize):
+		[rows, cols] = np.shape(inMat)
+		outMat = np.empty([rows*cols/(bSize*bSize), bSize, bSize])
+		for i in xrange(0, rows/bSize):
+			for j in xrange(0, cols/bSize):
+				outMat[i*cols/bSize + j,:,:] =  inMat[i*bSize:i*bSize+bSize,j*bSize:j*bSize+bSize]
+		return outMat
+
+	#devectorize the matrix
+	def dvecMat(self, shapeInfo, inMat, bSize):
+		[rows, cols] = shapeInfo
+		outMat = np.empty([rows, cols])
+		for i in xrange(0, rows/bSize):
+			for j in xrange(0, cols/bSize):
+				outMat[i*bSize:i*bSize+bSize, j*bSize:j*bSize+bSize] = inMat[i*cols/bSize + j, :, :]
+		return outMat
+
+
+
+
 	@staticmethod
 	def imresize(orgImgObj, shapeInfo, ratio):
 		outImg = orgImgObj.resize((np.array(shapeInfo[1])/ratio, np.array(shapeInfo[0])/ratio))
