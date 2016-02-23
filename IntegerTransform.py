@@ -1,5 +1,5 @@
 import numpy as np
-from ImageTransform import *
+#from ImageTransform import *
 
 class IntegerTransform():
 	"""docstring for IntegerTransfrom"""
