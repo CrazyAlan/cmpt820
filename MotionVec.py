@@ -111,7 +111,7 @@ class MotionVecB(MotionVecP):
         self.Ref2 = Ref2 
         self.Ref2 = self.stackReferencMat(self.Ref2)    
 
-        self.MATCH_MAD_THREASH_HOLD = 20
+        self.MATCH_MAD_THREASH_HOLD = 10
 
     def getMotionVecForAll(self, refMat=None, madFlag=None):
         if refMat is None:
@@ -164,6 +164,7 @@ class MotionVecB(MotionVecP):
                 [rowPos, colPos] = motionVect2[i,j,:] + [i*mbSize, j*mbSize] + [self.offset*2, self.offset*2]
                 tmp2 = refMat2[rowPos:rowPos+mbSize,colPos:colPos+mbSize]
 
+                
                 if minMad1[i,j] > minMad2[i,j]:
                     if minMad1[i,j] > self.MATCH_MAD_THREASH_HOLD:
                         recPFrame[i*mbSize:(i+1)*mbSize, j*mbSize:(j+1)*mbSize] = tmp2
@@ -187,35 +188,37 @@ class MotionVecB(MotionVecP):
         
         return (recoveredImage1, recoveredImage1)
 
-            
 
-frames = []
-for i in xrange(30,40):
-    tmpFrame = cv2.imread("Frames/singleFrame"+str(i)+".tif")
-   # cv2.imshow('image', tmpFrame)
-    frames.append(tmpFrame)
+if __name__ == '__main__':
+    
 
-
-IFrame = frames[0][:,:,0]
-BFrame = frames[1][:,:,0]
-PFrame = frames[2][:,:,0]
-
-#Deal with P frame
-mvP = MotionVecP(IFrame,PFrame)
-motionVector = mvP.getMotionVecForAll()
-recoveredPFrame = mvP.recoverPfromI(IFrame, motionVector)
+    frames = []
+    for i in xrange(30,40):
+        tmpFrame = cv2.imread("Frames/singleFrame"+str(i)+".tif")
+       # cv2.imshow('image', tmpFrame)
+        frames.append(tmpFrame)
 
 
-#Deal with B frame
-mvB = MotionVecB(IFrame,PFrame,BFrame)
-motionInfo =  mvB.getTwoMotionVector()
-recPFrame = mvB.recoverPfromI(IFrame,PFrame,motionInfo)
+    IFrame = frames[0][:,:,0]
+    BFrame = frames[1][:,:,0]
+    PFrame = frames[2][:,:,0]
+
+    #Deal with P frame
+    mvP = MotionVecP(IFrame,PFrame)
+    motionVector = mvP.getMotionVecForAll()
+    recoveredPFrame = mvP.recoverPfromI(IFrame, motionVector)
+
+
+    #Deal with B frame
+    mvB = MotionVecB(IFrame,PFrame,BFrame)
+    motionInfo =  mvB.getTwoMotionVector()
+    recPFrame = mvB.recoverPfromI(IFrame,PFrame,motionInfo)
 
 
 
-cv2.imshow('image', recPFrame)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+    cv2.imshow('image', recPFrame)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
            
 
 
