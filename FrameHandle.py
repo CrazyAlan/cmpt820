@@ -24,8 +24,8 @@ Coding Sequence I P B B P B B I B B
 	
 	#Read Image Frames as double
 	#rgbIm1 = IMT.im2double(frames[i])
-IFrame = IMT.im2double(frames[0])
-PFrame = IMT.im2double(frames[1])
+IFrame = IMT.im2double(frames[3])
+PFrame = IMT.im2double(frames[4])
 
 PHand = PFrameHandle()
 diffAndMotion = PHand.encode3Channels(IFrame, PFrame)
@@ -88,7 +88,7 @@ recPFrame2 = mvB2.recoverPfromI(IFrame,PFrame,motionInfo)
 
 
 
-cv2.imshow('image', IMT.double2uintImage(rgbImage))
+cv2.imshow('image', IMT.double2uintImage(rgbImage[:,:,1]))
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 

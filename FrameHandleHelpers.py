@@ -50,9 +50,9 @@ class PFrameHandle():
 
 		#Expand all 3 channels
 		yuvRec = self.IMT.chromaExpand(Y_P, Cr_P, Cb_P)
-		rgbImRec = self.IMT.yuv2rgb(yuvRec)
+		#rgbImRec = self.IMT.yuv2rgb(yuvRec)
 
-		return rgbImRec
+		return yuvRec
 
 	def decode(self, IFrame, diff,  motionVector):
 		mvP = MotionVecP(IFrame, IFrame) #Here use both I frame to initialize, as no need for Pframe
@@ -67,6 +67,41 @@ class BFrameHandle():
 	def __init__(self):
 		self.data = []
 
-class CFrameHandle():
+class IFrameHandle():
 	def __init__(self):
 		self.data = []	
+
+
+
+if __name__ == '__main__':
+	frames = []
+
+	for i in xrange(30,40):
+	    tmpFrame = cv2.imread("Frames/singleFrame"+str(i)+".tif")
+	   # cv2.imshow('image', tmpFrame)
+	    frames.append(tmpFrame)
+
+	IMT = ImageTransform()
+	IT = IntegerTransform()
+	IT.QuantizationMatrix(0)
+
+	'''
+	Displaying Sequence: I B B P B B P B B I 
+	Coding Sequence I P B B P B B I B B 
+	'''
+	#for i in range(1): #10 frames handle
+		
+		#Read Image Frames as double
+		#rgbIm1 = IMT.im2double(frames[i])
+	IFrame = IMT.im2double(frames[3])
+	PFrame = IMT.im2double(frames[4])
+
+	PHand = PFrameHandle()
+	diffAndMotion = PHand.encode3Channels(IFrame, PFrame)
+
+	rgbImage = PHand.decode3Channels(IFrame, diffAndMotion)
+
+
+	cv2.imshow('image', IMT.double2uintImage(rgbImage[:,:,:]))
+	cv2.waitKey(0)
+	cv2.destroyAllWindows()
