@@ -26,8 +26,9 @@ class ImageTransform:
 		if minValue < 0:
 			doubleImg += abs(minValue)
 		maxValue = np.amax(doubleImg)
-		doubleImg /= maxValue
-		doubleImg *= 255
+		if maxValue > 255:
+			doubleImg /= maxValue
+			doubleImg *= 255
 		uintImage = doubleImg.astype(np.uint8)
 		return uintImage
 
