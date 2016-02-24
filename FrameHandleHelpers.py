@@ -58,8 +58,8 @@ class PFrameHandle():
 		#Expand all 3 channels
 		yuvRec = self.IMT.chromaExpand(Y_P, Cr_P, Cb_P)
 		rgbImRec = self.IMT.yuv2rgb(yuvRec)
-
-		return rgbImRec
+		rgbIm =  self.IMT.double2uintImage
+		return rgbIm
 
 	def decode(self, IFrame, diff,  motionVector):
 		mvP = MotionVecP(IFrame, np.zeros_like(IFrame)) #Here use both I frame to initialize, as no need for Pframe
