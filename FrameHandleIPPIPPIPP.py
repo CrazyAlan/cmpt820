@@ -49,7 +49,7 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-
+    cycleCount += 1
 #diffAndMotion = PHand.encode3Channels(IFrame, PFrame)
 
 #rgbImage = PHand.decode3Channels(IFrame, diffAndMotion)

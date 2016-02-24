@@ -58,7 +58,7 @@ class PFrameHandle():
 		#Expand all 3 channels
 		yuvRec = self.IMT.chromaExpand(Y_P, Cr_P, Cb_P)
 		rgbImRec = self.IMT.yuv2rgb(yuvRec)
-		rgbIm =  self.IMT.double2uintImage
+		rgbIm =  self.IMT.double2uintImage(rgbImRec)
 		return rgbIm
 
 	def decode(self, IFrame, diff,  motionVector):
