@@ -31,7 +31,7 @@ class BFrameHandle():
 
 		[diffY, motionInfoY] = self.encode(Y_I,Y_P,Y_B)
 		[diffCr, motionInfoCr] = self.encode(Cr_I,Cr_P,Cr_B)
-		[diffCb, motionInfoCb] = self.encode(Cb_I,Cb_P,Cr_B)
+		[diffCb, motionInfoCb] = self.encode(Cb_I,Cb_P,Cb_B)
 
 		return [diffY, motionInfoY, diffCr, motionInfoCr, diffCb, motionInfoCb]
 	
@@ -110,9 +110,10 @@ if __name__ == '__main__':
 
 	rgbImage = BHand.decode3Channels(IFrame, PFrame, diffAndMotion)
 
-	#print(np.sum(rgbImage-PFrame))
-	cv2.imshow('image', IMT.double2uintImage(rgbImage[:,:,:]))
-	
+	print(np.sum(rgbImage-BFrame))
+	cv2.imshow('image1', IMT.double2uintImage(BFrame))
+	cv2.imshow('image2', IMT.double2uintImage(rgbImage))
+
 	#cv2.imshow('image', IMT.double2uintImage(PFrame))
 
 	cv2.waitKey(0)
