@@ -123,5 +123,6 @@ if __name__ == '__main__':
 	Y = np.load("Y.npy")
 	IC = IntraCoding(30)
 	Y_r = IC.IntraCodingVec(Y)
+	print np.shape(Y_r)
 	np.save("Y_r.npy",Y_r)
 		

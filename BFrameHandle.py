@@ -110,7 +110,7 @@ if __name__ == '__main__':
 
 	rgbImage = BHand.decode3Channels(IFrame, PFrame, diffAndMotion)
 
-	print(np.sum(rgbImage-BFrame))
+	print(np.sum(rgbImage-PFrame))
 	cv2.imshow('image1', IMT.double2uintImage(BFrame))
 	cv2.imshow('image2', IMT.double2uintImage(rgbImage))
 

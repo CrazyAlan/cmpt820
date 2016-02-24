@@ -113,7 +113,7 @@ class MotionVecB(MotionVecP):
         self.Ref2 = Ref2 
         self.Ref2 = self.stackReferencMat(self.Ref2)    
 
-        self.MATCH_MAD_THREASH_HOLD = 10
+        self.MATCH_MAD_THREASH_HOLD = 100
 
     def getMotionVecForAll(self, refMat=None, madFlag=None):
         if refMat is None:
