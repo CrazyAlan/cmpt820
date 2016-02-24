@@ -113,7 +113,7 @@ class MotionVecB(MotionVecP):
         self.Ref2 = Ref2 
         self.Ref2 = self.stackReferencMat(self.Ref2)    
 
-        self.MATCH_MAD_THREASH_HOLD = 100
+        self.MATCH_MAD_THREASH_HOLD = 0
 
     def getMotionVecForAll(self, refMat=None, madFlag=None):
         if refMat is None:
@@ -167,18 +167,18 @@ class MotionVecB(MotionVecP):
                 tmp2 = refMat2[rowPos:rowPos+mbSize,colPos:colPos+mbSize]
 
                 
-                if minMad1[i,j] > minMad2[i,j]:
-                    if minMad1[i,j] > self.MATCH_MAD_THREASH_HOLD:
-                        recPFrame[i*mbSize:(i+1)*mbSize, j*mbSize:(j+1)*mbSize] = tmp2
-                    else:
-                        recPFrame[i*mbSize:(i+1)*mbSize, j*mbSize:(j+1)*mbSize] = (tmp1+tmp2)/2
-                else:
-                    if minMad2[i,j] > self.MATCH_MAD_THREASH_HOLD:
-                        recPFrame[i*mbSize:(i+1)*mbSize, j*mbSize:(j+1)*mbSize] = tmp1
-                    else:
-                        recPFrame[i*mbSize:(i+1)*mbSize, j*mbSize:(j+1)*mbSize] = (tmp1+tmp2)/2
+                # if minMad1[i,j] > minMad2[i,j]:
+                #     if minMad1[i,j] > self.MATCH_MAD_THREASH_HOLD:
+                #         recPFrame[i*mbSize:(i+1)*mbSize, j*mbSize:(j+1)*mbSize] = tmp2
+                #     else:
+                #         recPFrame[i*mbSize:(i+1)*mbSize, j*mbSize:(j+1)*mbSize] = (tmp1+tmp2)/2
+                # else:
+                #     if minMad2[i,j] > self.MATCH_MAD_THREASH_HOLD:
+                #         recPFrame[i*mbSize:(i+1)*mbSize, j*mbSize:(j+1)*mbSize] = tmp1
+                #     else:
+                #         recPFrame[i*mbSize:(i+1)*mbSize, j*mbSize:(j+1)*mbSize] = (tmp1+tmp2)/2
                 
-
+                recPFrame[i*mbSize:(i+1)*mbSize, j*mbSize:(j+1)*mbSize] = tmp2
         return recPFrame
 
     def diffFrame(self,Ref1, Ref2):
@@ -216,7 +216,7 @@ if __name__ == '__main__':
     motionInfo =  mvB.getTwoMotionVector()
     recPFrame = mvB.recoverPfromI(IFrame,PFrame,motionInfo)
 
-
+    print np.sum(abs(recoveredPFrame-IFrame ))
 
     cv2.imshow('image', recPFrame)
     cv2.waitKey(0)

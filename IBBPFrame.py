@@ -9,11 +9,11 @@ from collections import deque
 from BFrameHandle import *
 
 #frames = []
-QP = 0
+QP = 8
 cycleCount = 0
 displayCount = 0
 
-CONSTANT_VIDEO_PATH = "SampleVideo_360x240_50mb.mp4"
+CONSTANT_VIDEO_PATH = "timedVideo.mp4"
 cap = cv2.VideoCapture(CONSTANT_VIDEO_PATH)
 
 IMT = ImageTransform()
@@ -35,11 +35,12 @@ IHand = IFrameHandle(QP)
 BHand = BFrameHandle(QP)
 
 
-
 '''
 Displaying Sequence: I P P I P P I P P  
 Coding Sequence I P B B P B B I B B 
 '''
+
+framName = "I"
 
 while True:
 
@@ -48,25 +49,30 @@ while True:
     if cycleCount%9 == 0: #IFrame
         IFrame = IMT.im2double(Frame)
         FrameDecode = IHand.IFrameDecoded(IFrame)
-        DisplayFrame[(displayCount+3)%6] = FrameDecode
+        print('I', (displayCount+3+2)%6)
+        DisplayFrame[(displayCount+3+2)%6] = FrameDecode
         RefFrameBuffer.append(FrameDecode)
         #DisplayFrame[]
+        framName = "I"
 
     elif cycleCount%3 == 0:  #PFrame
         PFrame = IMT.im2double(Frame)
-        
+
         RefFrame = RefFrameBuffer.pop()
         RefFrameBuffer.append(RefFrame)
 
         diffAndMotion = PHand.encode3Channels(RefFrame, PFrame)
         rgbImage = PHand.decode3Channels(RefFrame, diffAndMotion)
         FrameDecode = rgbImage
-        DisplayFrame[(displayCount+3)%6] = FrameDecode
+        DisplayFrame[(displayCount+3+2)%6] = FrameDecode
+        print('P', (displayCount+3+2)%6)
         RefFrameBuffer.append(FrameDecode)
+        framName = "P"
 
     else: #BFrame
         BFrame = IMT.im2double(Frame) 
         BFrameBuffer.append(BFrame) #Every Time, append to buffer
+        framName = "B"
 
     if cycleCount%3 == 0 and cycleCount>0: #IFrame or PFrame, Decode B Frame
         IFrameRef = RefFrameBuffer.popleft()
@@ -79,10 +85,15 @@ while True:
 
             diffAndMotion = BHand.encode3Channels(IFrameRef, PFrameRef, BFrame)
             rgbImage = BHand.decode3Channels(IFrameRef, PFrameRef, diffAndMotion)
-            DisplayFrame[(displayCount+3+x+1)%6] = rgbImage
+            print ('B', (displayCount+3+x)%6)
+            DisplayFrame[(displayCount+3+x)%6] = rgbImage
 
-    cv2.imshow('frame',Frame)
     cv2.imshow('frameDecode',DisplayFrame[displayCount%6])
+    cv2.imshow('frame',Frame)
+
+    cv2.imwrite('Output/frame' +str(displayCount)+ '_'+framName + '.jpg', DisplayFrame[displayCount%6])
+    print('Displaying', displayCount%6)
+    
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 

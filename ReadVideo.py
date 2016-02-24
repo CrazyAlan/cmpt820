@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 
-CONSTANT_VIDEO_PATH = "SampleVideo_360x240_50mb.mp4"
+CONSTANT_VIDEO_PATH = "output.avi"
 cap = cv2.VideoCapture(CONSTANT_VIDEO_PATH)
 #i=1
 
