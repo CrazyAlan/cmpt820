@@ -28,7 +28,9 @@ class IFrameHandle():
 		#print np.shape(Y_rec)
 		yuvRec = self.IMT.chromaExpand(Y_rec, Cr_rec, Cb_rec)
 		rgbImRec = self.IMT.yuv2rgb(yuvRec)
-		return rgbImRec
+		rgbIm = self.IMT.double2uintImage(rgbImRec)
+
+		return rgbIm
 
 	def encode(self, IFrame):
 		recFrame = self.IC.IntraCodingVec(IFrame)

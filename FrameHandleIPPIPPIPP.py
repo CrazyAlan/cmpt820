@@ -4,8 +4,10 @@ from MotionVec import *
 from IntegerTransform import *
 from ImageTransform import *
 from FrameHandleHelpers import *
+from IFrameHandle import *
 
 #frames = []
+QP = 30
 cycleCount = 0
 CONSTANT_VIDEO_PATH = "SampleVideo_360x240_50mb.mp4"
 cap = cv2.VideoCapture(CONSTANT_VIDEO_PATH)
@@ -18,8 +20,8 @@ FRameBuffer = []
 Frame = []
 FrameDecode = []
 
-PHand = PFrameHandle(100)
-
+PHand = PFrameHandle(QP)
+IHand = IFrameHandle(QP)
 '''
 Displaying Sequence: I P P I P P I P P  
 Coding Sequence I P B B P B B I B B 
@@ -28,7 +30,7 @@ while True:
     if cycleCount%3 == 0: #IFrame
         ret, Frame = cap.read()
         IFrame = IMT.im2double(Frame)
-        FrameDecode = Frame
+        FrameDecode = IHand.IFrameDecoded(IFrame)
     else:  #PFrame
         ret, Frame = cap.read()
         PFrame = IMT.im2double(Frame)
@@ -36,7 +38,7 @@ while True:
         diffAndMotion = PHand.encode3Channels(IFrame, PFrame)
         rgbImage = PHand.decode3Channels(IFrame, diffAndMotion)
         FrameDecode = rgbImage
-        
+
     cv2.imshow('frame',Frame)
     cv2.imshow('frameDecode',FrameDecode)
     if cv2.waitKey(1) & 0xFF == ord('q'):
