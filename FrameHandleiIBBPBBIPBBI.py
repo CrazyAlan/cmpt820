@@ -7,7 +7,7 @@ from FrameHandleHelpers import *
 from IFrameHandle import *
 
 #frames = []
-QP = 30
+QP = 0
 cycleCount = 0
 CONSTANT_VIDEO_PATH = "SampleVideo_360x240_50mb.mp4"
 cap = cv2.VideoCapture(CONSTANT_VIDEO_PATH)
@@ -35,15 +35,14 @@ while True:
         ret, Frame = cap.read()
         IFrame = IMT.im2double(Frame)
         FrameDecode = IHand.IFrameDecoded(IFrame)
-        FRameBuffer = FrameDecode
     else:  #PFrame
         ret, Frame = cap.read()
         PFrame = IMT.im2double(Frame)
-        diffAndMotion = PHand.encode3Channels(FRameBuffer, PFrame)
-        rgbImage = PHand.decode3Channels(FRameBuffer, diffAndMotion)
+
+        diffAndMotion = PHand.encode3Channels(IFrame, PFrame)
+        rgbImage = PHand.decode3Channels(IFrame, diffAndMotion)
         FrameDecode = rgbImage
-        FRameBuffer = FrameDecode
-        
+
     cv2.imshow('frame',Frame)
     cv2.imshow('frameDecode',FrameDecode)
     if cv2.waitKey(1) & 0xFF == ord('q'):
